@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:diary/screen/add_edit.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -88,42 +89,44 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              backgroundColor: Colors.white,
-              expandedHeight: 250.0,
-              toolbarHeight: 200,
-              floating: true,
-              pinned: true,
-              title: ListTile(
-                title: Text("Hi salman",
-                    style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 48,
-                        fontWeight: FontWeight.w500)),
-                subtitle: Text("Good Morning..!",
-                    style: TextStyle(
-                        color: Colors.green,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500)),
-              ),
-              actions: [
-                Icon(
-                  Icons.circle_sharp,
-                  size: 105,
-                  color: Colors.grey,
+        body: Container(
+          color: Color(0xffeff1f2),
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                backgroundColor: Color(0xffeff1f2),
+                expandedHeight: 250.0,
+                toolbarHeight: 200,
+                floating: true,
+                pinned: true,
+                title: ListTile(
+                  title: Text("Hi salman",
+                      style: TextStyle(
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 48,
+                          fontWeight: FontWeight.w500)),
+                  subtitle: Text("Good Morning..!",
+                      style: TextStyle(
+                          color: Color(0xff2b6673),
+                          fontSize: 24,
+                          fontWeight: FontWeight.w500)),
                 ),
-              ],
-              bottom: AppBar(
-                elevation: 0.0,
-                toolbarHeight: 60,
-                backgroundColor: Colors.white,
-                title: Container(
-                  height: 50,
-                  width: double.infinity,
-                  child: TextField(
-                    decoration: InputDecoration(
+                actions: [
+                  Icon(
+                    Icons.circle_sharp,
+                    size: 105,
+                    color: Colors.grey,
+                  ),
+                ],
+                bottom: AppBar(
+                  elevation: 0.0,
+                  toolbarHeight: 60,
+                  backgroundColor: Color(0xffeff1f2),
+                  title: Container(
+                    height: 50,
+                    width: double.infinity,
+                    child: TextField(
+                      decoration: InputDecoration(
                         prefixIcon: Icon(
                           Icons.search,
                           size: 30,
@@ -135,107 +138,121 @@ class _HomepageState extends State<Homepage> {
                         filled: true,
                         hintStyle: TextStyle(color: Colors.grey[800]),
                         hintText: "Type in your text",
-                        fillColor: Colors.white70),
+                        fillColor: Color(0xffeff1f2),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
-            StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection("diary").snapshots(),
-                builder: (context, snapshots) {
-                  if (snapshots.hasData) {
-                    return SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (BuildContext context, int i) {
-                          QueryDocumentSnapshot documentSnapshot =
-                              snapshots.data!.docs[i];
-                          return Container(
-                            //height: 100,
-                            child: Card(
-                              margin: EdgeInsets.only(
-                                  top: 5, bottom: 5, right: 5, left: 5),
-                              child: Dismissible(
-                                key: UniqueKey(),
-                                resizeDuration: Duration(milliseconds: 200),
-                                background: Container(
-                                  color: Colors.red,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                        size: 26.0,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                // only allows the user swipe from right to left
-                                direction: DismissDirection.endToStart,
-                                onDismissed: (_) {
-                                  setState(() {
-                                    deleteconformation(
-                                        context, documentSnapshot);
-                                  });
-                                },
-                                child: ListTile(
-                                  /*trailing: IconButton(
-                                    icon: new Icon(Icons.delete),
+              StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection("diary")
+                      .snapshots(),
+                  builder: (context, snapshots) {
+                    if (snapshots.hasData) {
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (BuildContext context, int i) {
+                            QueryDocumentSnapshot documentSnapshot =
+                                snapshots.data!.docs[i];
+                            return Container(
+                              //height: 100,
+                              child: Card(
+                                color: Color(0xffeff1f2),
+                                //color: Color(0xffeff1f2 0xfff4f0e8),
+                                elevation: 2.0,
+                                margin: EdgeInsets.only(
+                                    top: 5, bottom: 5, right: 5, left: 5),
+                                child: Dismissible(
+                                  key: UniqueKey(),
+                                  resizeDuration: Duration(milliseconds: 200),
 
-                                    onPressed: () {
-                                      //showToast();
-                                    }/ // null disables the button
-
-                                    color: Theme.of(context).primaryColor,
-                                  ),*/
-                                  title: Text(
-                                    documentSnapshot['diarytitle'],
-                                    style: TextStyle(
-                                        fontSize: 25,
-                                        fontWeight: FontWeight.bold),
+                                  // only allows the user swipe from right to left
+                                  //direction: DismissDirection.endToStart,
+                                  onDismissed: (direction) {
+                                    if (direction ==
+                                        DismissDirection.startToEnd) {
+                                      setState(() {});
+                                      //add "add to favorite" function
+                                    } else {
+                                      setState(() {
+                                        deleteconformation(
+                                            context, documentSnapshot);
+                                      });
+                                    }
+                                  },
+                                  background: swipingfeature(
+                                    Colors.green,
+                                    Icons.archive,
+                                    MainAxisAlignment.start,
                                   ),
-                                  subtitle: Text(
-                                    documentSnapshot['diarybody'],
-                                    style: TextStyle(
-                                        fontSize: 18,
-                                        color: Theme.of(context).primaryColor),
+                                  secondaryBackground: swipingfeature(
+                                    Colors.red,
+                                    Icons.delete,
+                                    MainAxisAlignment.end,
+                                  ),
+
+                                  child: ListTile(
+                                    /*trailing: IconButton(
+                                      icon: new Icon(Icons.delete),
+
+                                      onPressed: () {
+                                        //showToast();
+                                      }/ // null disables the button
+
+                                      color: Theme.of(context).primaryColor,
+                                    ),*/
+                                    title: Text(
+                                      documentSnapshot['diarytitle'],
+                                      style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    subtitle: Text(
+                                      documentSnapshot['diarybody'],
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
-                        childCount:
-                            snapshots.data!.docs.length, // 1000 list items
-                      ),
-                    );
-                  }
-                  return SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: Center(
-                        child: Column(
-                          children: [
-                            Text("please wait...."),
-                            CircularProgressIndicator(),
-                          ],
+                            );
+                          },
+                          childCount:
+                              snapshots.data!.docs.length, // 1000 list items
+                        ),
+                      );
+                    }
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Text("please wait...."),
+                              CircularProgressIndicator(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  );
-                }),
-          ],
+                    );
+                  }),
+            ],
+          ),
         ),
         //floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: Visibility(
           visible: _show,
           child: FloatingActionButton(
               // isExtended: true,
-              backgroundColor: Colors.green,
+              backgroundColor: Color(0xff2b6673),
               child: Icon(Icons.add),
               onPressed: () {
-                showDialog(
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => AddorEdit()));
+                /* showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return Container(
@@ -302,9 +319,28 @@ class _HomepageState extends State<Homepage> {
                           ],
                         ),
                       );
-                    });
+                    });*/
               }),
         ));
+  }
+
+  Container swipingfeature(color, icon, allignment) {
+    return Container(
+      color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Row(
+          mainAxisAlignment: allignment,
+          children: [
+            Icon(
+              icon,
+              color: Colors.white,
+              size: 26.0,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Future<dynamic> deleteconformation(
@@ -357,6 +393,8 @@ class _HomepageState extends State<Homepage> {
         onPressed: () {
           deleteDiary(functionapplied);
           Navigator.of(context).pop();
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text('deleted')));
         },
         child: Text(text),
         style: ButtonStyle(
